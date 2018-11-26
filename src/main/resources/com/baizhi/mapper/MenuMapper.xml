@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.dao.MenuDao">
+
+    <resultMap type="com.baizhi.entity.Menu" id="resultMap">
+        <id column="cid" property="id"/>
+        <result column="ctitle" property="title"/>
+        <result column="curl" property="url"/>
+        <result column="ciconCls" property="iconCls"/>
+
+        <collection property="menus" ofType="com.baizhi.entity.Menu">
+            <id column="ccid" property="id"/>
+            <result column="cctitle" property="title"/>
+            <result column="ccurl" property="url"/>
+            <result column="cciconCls" property="iconCls"/>
+            <result column="cc.parent_id" property="parent_id"/>
+        </collection>
+    </resultMap>
+
+
+    <!-- 菜单查 -->
+    <select id="selectMenu" resultMap="resultMap">
+  		select  c.id cid,
+				c.title ctitle,
+				c.url curl,
+				c.iconCls ciconCls,
+				cc.id ccid,cc.title cctitle,
+				cc.url ccurl,
+				cc.iconCls cciconCls,
+				cc.parent_id ccparent_id
+		from cmfz_menu c
+		INNER JOIN cmfz_menu cc
+		on c.id=cc.parent_id
+ 	 </select>
+
+</mapper>

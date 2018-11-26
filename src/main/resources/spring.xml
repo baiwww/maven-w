@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--注解的包扫描-->
+    <context:component-scan base-package="com.baizhi.service"></context:component-scan>
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"></property>
+        <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
+        <property name="username" value="hr"></property>
+        <property name="password" value="hr"></property>
+    </bean>
+    <!--配置sqlSessionFactory-->
+    <bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <!--注册mapper文件-->
+        <property name="typeAliasesPackage" value="com.baizhi.entity"></property>
+        <property name="mapperLocations">
+            <list>
+                <value>com/baizhi/mapper/*.xml</value>
+            </list>
+        </property>
+    </bean>
+    <!-- 配置dao
+    MapperScannerConfigurer 的作用：对basePackage指定包中的 所有接口进行扫描 ，并 自动交给spring工厂进行管理
+    beanId的默认规则为：接口名 首字母 改小写 （如：UserDao-userDao  EmpDao-empDao）-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 注入接口所在包的 全限定名 -->
+        <property name="basePackage" value="com.baizhi.dao"></property>
+        <property name="sqlSessionFactoryBeanName" value="factory"></property>
+    </bean>
+
+    <!-- 配置事务 -->
+    <bean id="tm" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 事务的生效 -->
+    <tx:annotation-driven transaction-manager="tm"></tx:annotation-driven>
+</beans>
